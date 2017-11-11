@@ -1,12 +1,14 @@
 __author__ = 'liyihan'
 
 def readDocsCran():
-    return []
+    docs = []
+    return docs
+
+def readDocsNpl():
+    docs = []
+    return docs
 
 def readDocs(filename):
-    docs = []
-    if filename == 'cran':
-        return readDocsCran()
     '''
     1
     doc 1 is this
@@ -16,7 +18,12 @@ def readDocs(filename):
     '''
     [cranDoc]
     '''
-    return docs
+
+    docs = []
+    if filename == 'cran':
+        return readDocsCran()
+    elif filename == 'npl':
+        return readDocsNpl()
 
 def readQueries(filename):
     queries = []
