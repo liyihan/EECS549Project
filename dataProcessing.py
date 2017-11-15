@@ -47,6 +47,9 @@ def readDocs(filename):
     return docs
 
 
+###################################################################################################
+
+
 def readQueriesCran():
     f = open("dataSet/cran/cran.qry")
     preprossedQuery = ""
@@ -96,14 +99,84 @@ def readQueries(filename):
     '''
     return queries
 
+
+###################################################################################################
+
+
+def readRelNpl():
+    f = open("dataSet/npl/rlv-ass")
+    preprossedRel = ""
+
+    query_rel = dict()
+    relArrary = []
+
+    Index = 1
+    whetherIndex = True
+    for line in f.readlines():
+        if whetherIndex:
+            query_rel[Index] = []
+            whetherIndex = False
+        else:
+            if line[3] == '/':
+                whetherIndex = True
+                Index = Index + 1;
+            else:
+                query_rel[Index].extend([int(x) for x in line.split()])
+
+    rel = ""
+    for key in query_rel:
+        for n in query_rel[key]:
+            rel = rel + str(key) + ' ' + str(n) + ' ' + str(1) + '\n'
+
+    return rel
+
+class cranRel:
+    def __init__(self, a, b, c):
+        self.a = a
+        self.b = b
+        self.c = c
+
+    def __gt__(self, other):
+        if self.a != other.a:
+            return self.a > other.a
+        else:
+            if self.c != other.c:
+                return self.c > other.c
+            else:
+                return self.b > other.b
+
+
+
+def readRelCran():
+    f = open("dataSet/cran/cranqrel")
+    arr = []
+    for line in f.readlines():
+        temp = [int(x) for x in line.split()]
+        arr.append(cranRel(temp[0], temp[1], temp[2]))
+
+    arr.sort()
+
+    res = ""
+    for ele in arr:
+        res = res + str(ele.a) + " " + str(ele.b) + " " + str(ele.c) + "\n"
+
+    return res
+
+
 def readRel(filename):
-    rels = []
+    if filename == 'npl':
+        return readRelNpl()
+    elif filename == 'cran':
+        return readRelCran()
     '''
     queryID docID rel
     (irrelevant docs exclusive)
     [cranRel]
     '''
-    return rels
+
+
+###################################################################################################
+
 
 def xFoldValidation(x):
     result = []
@@ -122,7 +195,7 @@ def xFoldValidation(x):
     '''
     return result
 
-
+'''
 cranDocs = readDocs('cran')
 cranDocsFile = open("cranDocs.txt", 'w')
 cranDocsFile.write(cranDocs)
@@ -138,3 +211,14 @@ cranQueriesFile.write(cranQueries)
 nplQuries = readQueries('npl')
 nplQuriesFile = open("nplQuries.txt", 'w')
 nplQuriesFile.write(nplQuries)
+'''
+nplRel = readRel('npl')
+nplRelFile = open("nplRel.txt", 'w')
+nplRelFile.write(nplRel)
+
+cranRel = readRel('cran')
+cranRelFile = open("cranRel.txt", 'w')
+cranRelFile.write(cranRel)
+
+
+
