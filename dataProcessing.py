@@ -8,24 +8,30 @@ def readDocsCran():
     readText = False
     for line in f.readlines():
         if line[0] == '.' and line[1] == 'I':
-            preprossedDoc = preprossedDoc + str(index) + '\n'
+            preprossedDoc = preprossedDoc + '\n' + str(index) + '\n'
             index = index + 1
             readText = False
         elif line[0] == '.' and line[1] == 'W':
             readText = True
         elif readText:
-            preprossedDoc = preprossedDoc + line
+            preprossedDoc = preprossedDoc + line[:-1]
 
-    return preprossedDoc
+    return preprossedDoc[1:]
 
 def readDocsNpl():
     f = open("dataSet/npl/doc-text")
     preprossedDoc = ""
+    newLine = True
     for line in f.readlines():
         if line[0] == " ":
-            continue
+            preprossedDoc = preprossedDoc + '\n'
+            newLine = True
         else:
-            preprossedDoc = preprossedDoc + line
+            if newLine:
+                preprossedDoc = preprossedDoc + line
+                newLine = False
+            else:
+                preprossedDoc = preprossedDoc + line[:-1]
 
     return preprossedDoc
 
@@ -195,15 +201,15 @@ def xFoldValidation(x):
     '''
     return result
 
-'''
 cranDocs = readDocs('cran')
 cranDocsFile = open("cranDocs.txt", 'w')
 cranDocsFile.write(cranDocs)
 
+
 nplDocs = readDocs('npl')
 nplDocsFile = open("nplDocs.txt", 'w')
 nplDocsFile.write(nplDocs)
-
+'''
 cranQueries = readQueries('cran')
 cranQueriesFile = open("cranQueries.txt", 'w')
 cranQueriesFile.write(cranQueries)
