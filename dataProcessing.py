@@ -74,7 +74,7 @@ def readQueriesCran():
         elif readText:
             preprossedQuery = preprossedQuery + line[:-1]
 
-    return preprossedQuery
+    return preprossedQuery[1:]
 
 
 def readQueriesNpl():
