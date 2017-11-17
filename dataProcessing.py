@@ -1,5 +1,7 @@
 __author__ = 'changliu'
 
+import random
+
 def readDocsCran():
     f = open("dataSet/cran/cran.all.1400")
     preprossedDoc = ""
@@ -184,8 +186,72 @@ def readRel(filename):
 ###################################################################################################
 
 
-def xFoldValidation(x):
-    result = []
+def xFoldValidation():
+    cranArr = list(range(1,1401))
+    nplArr = list(range(1,11430))
+
+    random.shuffle(cranArr)
+    random.shuffle(nplArr)
+
+    interval = len(cranArr)/5
+    folders = dict()
+    for i in range(0,5):
+        if (i+1)*interval < len(cranArr):
+            folders[i] = cranArr[i*interval:(i+1)*interval]
+        else:
+            folders[i] = cranArr[(i*interval):]   
+    for i in range(0,5):
+        trainFilename = "cranTrain" + str(i)
+        trainFile = open(trainFilename, 'w')
+
+        testFilename = "cranTest" + str(i)
+        testFile = open(testFilename, 'w')
+
+        trainStr = ""
+        testStr = ""
+        for j in range(0,5):
+            if j != i:
+                for x in folders[j]:
+                    trainStr = trainStr + " " + str(x)
+            else:
+                for x in folders[j]:
+                    testStr = testStr + " " + str(x)
+
+
+        trainFile.write(trainStr)
+        testFile.write(testStr)
+
+
+    interval = len(nplArr)/5
+    folders = dict()
+    for i in range(0,5):
+        if (i+1)*interval < len(nplArr):
+            folders[i] = nplArr[i*interval:(i+1)*interval]
+        else:
+            folders[i] = nplArr[(i*interval):]   
+    for i in range(0,5):
+        trainFilename = "nplTrain" + str(i)
+        trainFile = open(trainFilename, 'w')
+
+        testFilename = "nplTest" + str(i)
+        testFile = open(testFilename, 'w')
+
+        trainStr = ""
+        testStr = ""
+        for j in range(0,5):
+            if j != i:
+                for x in folders[j]:
+                    trainStr = trainStr + " " + str(x)
+            else:
+                for x in folders[j]:
+                    testStr = testStr + " " + str(x)
+
+
+        trainFile.write(trainStr)
+        testFile.write(testStr)
+
+
+
     '''
     [cranTrain1]
     1 4 7 9
@@ -199,8 +265,8 @@ def xFoldValidation(x):
     [cranTest2]
     12 34 35
     '''
-    return result
-
+    return cranArr
+'''
 cranDocs = readDocs('cran')
 cranDocsFile = open("cranDocs.txt", 'w')
 cranDocsFile.write(cranDocs)
@@ -209,7 +275,7 @@ cranDocsFile.write(cranDocs)
 nplDocs = readDocs('npl')
 nplDocsFile = open("nplDocs.txt", 'w')
 nplDocsFile.write(nplDocs)
-'''
+
 cranQueries = readQueries('cran')
 cranQueriesFile = open("cranQueries.txt", 'w')
 cranQueriesFile.write(cranQueries)
@@ -217,7 +283,7 @@ cranQueriesFile.write(cranQueries)
 nplQuries = readQueries('npl')
 nplQuriesFile = open("nplQuries.txt", 'w')
 nplQuriesFile.write(nplQuries)
-'''
+
 nplRel = readRel('npl')
 nplRelFile = open("nplRel.txt", 'w')
 nplRelFile.write(nplRel)
@@ -225,6 +291,8 @@ nplRelFile.write(nplRel)
 cranRel = readRel('cran')
 cranRelFile = open("cranRel.txt", 'w')
 cranRelFile.write(cranRel)
+'''
+xFoldValidation()
 
 
 
