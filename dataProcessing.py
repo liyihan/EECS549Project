@@ -266,7 +266,7 @@ def xFoldValidation():
     12 34 35
     '''
     return cranArr
-
+'''
 cranDocs = readDocs('cran')
 cranDocsFile = open("cranDocs.txt", 'w')
 cranDocsFile.write(cranDocs)
@@ -275,11 +275,11 @@ cranDocsFile.write(cranDocs)
 nplDocs = readDocs('npl')
 nplDocsFile = open("nplDocs.txt", 'w')
 nplDocsFile.write(nplDocs)
-
+'''
 cranQueries = readQueries('cran')
-cranQueriesFile = open("cranQueries.txt", 'w')
+cranQueriesFile = open("cranQuries.txt", 'w')
 cranQueriesFile.write(cranQueries)
-
+'''
 nplQuries = readQueries('npl')
 nplQuriesFile = open("nplQuries.txt", 'w')
 nplQuriesFile.write(nplQuries)
@@ -293,6 +293,6 @@ cranRelFile = open("cranRel.txt", 'w')
 cranRelFile.write(cranRel)
 
 xFoldValidation()
-
+'''
 
 
