@@ -66,13 +66,13 @@ def readQueriesCran():
     readText = False
     for line in f.readlines():
         if line[0] == '.' and line[1] == 'I':
-            preprossedQuery = preprossedQuery + str(index) + '\n'
+            preprossedQuery = preprossedQuery + '\n'+str(index) + '\n'
             index = index + 1
             readText = False
         elif line[0] == '.' and line[1] == 'W':
             readText = True
         elif readText:
-            preprossedQuery = preprossedQuery + line
+            preprossedQuery = preprossedQuery + line[:-1]
 
     return preprossedQuery
 
@@ -201,10 +201,10 @@ def xFoldValidation():
         else:
             folders[i] = cranArr[(i*interval):]   
     for i in range(0,5):
-        trainFilename = "cranTrain" + str(i)
+        trainFilename = "cranTrain" + str(i) + ".txt"
         trainFile = open(trainFilename, 'w')
 
-        testFilename = "cranTest" + str(i)
+        testFilename = "cranTest" + str(i) + ".txt"
         testFile = open(testFilename, 'w')
 
         trainStr = ""
@@ -230,11 +230,11 @@ def xFoldValidation():
         else:
             folders[i] = nplArr[(i*interval):]   
     for i in range(0,5):
-        trainFilename = "nplTrain" + str(i)
+        trainFilename = "nplTrain" + str(i) + ".txt"
         trainFile = open(trainFilename, 'w')
 
-        testFilename = "nplTest" + str(i)
-        testFile = open(testFilename, 'w')
+        testFilename = "nplTest" + str(i) + ".txt"
+        testFile = open(testFilename, 'w') 
 
         trainStr = ""
         testStr = ""
@@ -266,7 +266,7 @@ def xFoldValidation():
     12 34 35
     '''
     return cranArr
-'''
+
 cranDocs = readDocs('cran')
 cranDocsFile = open("cranDocs.txt", 'w')
 cranDocsFile.write(cranDocs)
@@ -291,7 +291,7 @@ nplRelFile.write(nplRel)
 cranRel = readRel('cran')
 cranRelFile = open("cranRel.txt", 'w')
 cranRelFile.write(cranRel)
-'''
+
 xFoldValidation()
 
 
