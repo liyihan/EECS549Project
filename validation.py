@@ -21,8 +21,10 @@ import pdb
 
 # in this funciton the score of relevant documents = 1
 def MAP(datasetName, fold):
-	goldDir = 'dataSet/pDataSet/' + datasetName + '/' + datasetName + 'Test'
-	ResultDir = 'dataSet/pDataSet/' + datasetName + '/' + datasetName + 'Otfidf'
+	# goldDir = 'dataSet/pDataSet/' + datasetName + '/' + datasetName + 'Test'
+	# ResultDir = 'dataSet/pDataSet/' + datasetName + '/' + datasetName + 'Otfidf'
+	goldDir = datasetName + 'Test'
+	ResultDir = datasetName + 'Otfidf'
 	MAPs = []
 	# for each fold
 	for i in range(fold):
