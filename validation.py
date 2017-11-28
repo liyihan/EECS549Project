@@ -23,6 +23,16 @@ import pdb
 def MAP(datasetName, fold):
 	# goldDir = 'dataSet/pDataSet/' + datasetName + '/' + datasetName + 'Test'
 	# ResultDir = 'dataSet/pDataSet/' + datasetName + '/' + datasetName + 'Otfidf'
+	relDir = datasetName + 'Rel'
+	relDict = {}
+	rel = open(relDir,'r').read().split('\n')
+	for line in rel:
+		[qid, docid, _] = line.split()
+		if qid in relDict.keys():
+			relDict[qid].append(docid)
+		else:
+			relDict[qid] = [docid]
+
 	goldDir = datasetName + 'Test'
 	ResultDir = datasetName + 'Otfidf'
 	MAPs = []
@@ -32,28 +42,15 @@ def MAP(datasetName, fold):
 		goldFile = goldDir + str(i+1) + '.txt'
 		result = open(resultFile, 'r').read().split('\n')
 		gold = open(goldFile, 'r').read().split('\n')
-		gold_dict = {}
-		for line in gold:
-			# print "line",line
-			# [qid, docid, _] = line.split()
-			ids = line.split()
-			qid = ids[0]
-			gold_dict[qid] = ids[1:] 
-			# if qid in gold_dict.keys():
-				# gold_dict[qid].append(docid)
-			# else:
-				# gold_dict[qid] = [docid]
+		goldid = gold.split()
 		result_dict = {}
-		result = result[:-1]
 		for line in result:
-			# print "result line", line.split()
 			[qid, docid, _] = line.split()
 			if qid in result_dict.keys():
 				result_dict[qid].append(docid)
 			else:
 				result_dict[qid] = [docid]
 		avePs = []
-		pdb.set_trace()
 		# for each query calculate aveP
 		for qid, res in result_dict.items():
 			num, corr, avg = 0.0, 0.0, 0.0
