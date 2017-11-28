@@ -34,19 +34,26 @@ def MAP(datasetName, fold):
 		gold = open(goldFile, 'r').read().split('\n')
 		gold_dict = {}
 		for line in gold:
-			[qid, docid, _] = line.split()
-			if qid in gold_dict.keys():
-				gold_dict[qid].append(docid)
-			else:
-				gold_dict[qid] = [docid]
+			# print "line",line
+			# [qid, docid, _] = line.split()
+			ids = line.split()
+			qid = ids[0]
+			gold_dict[qid] = ids[1:] 
+			# if qid in gold_dict.keys():
+				# gold_dict[qid].append(docid)
+			# else:
+				# gold_dict[qid] = [docid]
 		result_dict = {}
+		result = result[:-1]
 		for line in result:
+			# print "result line", line.split()
 			[qid, docid, _] = line.split()
 			if qid in result_dict.keys():
 				result_dict[qid].append(docid)
 			else:
 				result_dict[qid] = [docid]
 		avePs = []
+		pdb.set_trace()
 		# for each query calculate aveP
 		for qid, res in result_dict.items():
 			num, corr, avg = 0.0, 0.0, 0.0

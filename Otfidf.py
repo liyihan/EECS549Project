@@ -28,7 +28,7 @@ isRemoveStopWords = True
 isRemovePunctuation = True
 isUnigram = True
 stopList = []
-testId = "0"
+testIds = ["0", "1", "2", "3", "4"]
 datasetName = "cran"
 threshold = -1000
 
@@ -87,8 +87,7 @@ def readQueries(dataset):
     return queries
 
 def readTests(dataset, testId):
-    #f = open(dataset + "Test" + testId + ".txt")
-    f = open(dataset + "Test" + testId)
+    f = open(dataset + "Test" + testId + ".txt")
     return f.readline().split()
 
 def calculateIDF(docs):
@@ -146,7 +145,7 @@ def retrive(docs, tfidfs, test, query, resultFile):
 
 def retriveAll(docs, tfidfs, tests, queries, resultFile):
     for test in tests:
-        retrive(docs, tfidfs, test, queries[test], resultFile)
+        retrive(docs, tfidfs, test, queries[int(test)], resultFile)
 
 def workOn(dataset):
     f = open("stoplist.txt", "r")
@@ -158,12 +157,14 @@ def workOn(dataset):
     f.close()
     docs = readDocs(dataset)
     queries = readQueries(dataset)
-    tests = readTests(dataset, testId)
-    #tests = [1]
-    idf = calculateIDF(docs)
-    tfidfs = calculateTFIDF(docs, idf)
-    resultFile = open(dataset + "Otfidf" + testId, "w")
-    retriveAll(docs, tfidfs, tests, queries, resultFile)
+    for testId in testIds:
+        tests = readTests(dataset, testId)
+        #tests = [1]
+        idf = calculateIDF(docs)
+        tfidfs = calculateTFIDF(docs, idf)
+        resultFile = open(dataset + "Otfidf" + testId + ".txt", "w")
+        retriveAll(docs, tfidfs, tests, queries, resultFile)
+        resultFile.close()
 
 #-------------------------------------      Main     ---------------------------------------
 

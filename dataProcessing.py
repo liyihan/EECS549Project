@@ -149,7 +149,7 @@ class cranRel:
             return self.a > other.a
         else:
             if self.c != other.c:
-                return self.c > other.c
+                return self.c < other.c
             else:
                 return self.b > other.b
 
@@ -187,8 +187,8 @@ def readRel(filename):
 
 
 def xFoldValidation():
-    cranArr = list(range(1,1401))
-    nplArr = list(range(1,11430))
+    cranArr = list(range(1,226))
+    nplArr = list(range(1,94))
 
     random.shuffle(cranArr)
     random.shuffle(nplArr)
@@ -275,11 +275,11 @@ cranDocsFile.write(cranDocs)
 nplDocs = readDocs('npl')
 nplDocsFile = open("nplDocs.txt", 'w')
 nplDocsFile.write(nplDocs)
-'''
+
 cranQueries = readQueries('cran')
 cranQueriesFile = open("cranQuries.txt", 'w')
 cranQueriesFile.write(cranQueries)
-'''
+
 nplQuries = readQueries('npl')
 nplQuriesFile = open("nplQuries.txt", 'w')
 nplQuriesFile.write(nplQuries)
@@ -287,11 +287,11 @@ nplQuriesFile.write(nplQuries)
 nplRel = readRel('npl')
 nplRelFile = open("nplRel.txt", 'w')
 nplRelFile.write(nplRel)
-
+'''
 cranRel = readRel('cran')
 cranRelFile = open("cranRel.txt", 'w')
 cranRelFile.write(cranRel)
-
+'''
 xFoldValidation()
 '''
 
