@@ -19,6 +19,7 @@ queryID docID result
 import nltk
 import math
 import string
+import os
 from nltk.stem import *
 
 stemmer = SnowballStemmer("english")
@@ -30,7 +31,14 @@ isUnigram = True
 stopList = []
 testIds = ["0", "1", "2", "3", "4"]
 datasetName = "cran"
-threshold = -1000
+thresholds = [-1000, 0.8]
+
+def printThresholds():
+    f = open("thresholds.txt", "w")
+    for threshold in thresholds:
+        f.write(str(threshold) + "\n")
+    f.close()
+
 
 def lowerCase(doc):
     tokens = []
@@ -127,7 +135,7 @@ def calculateResult(tfidf, query):
             result += tfidf[token]
     return result
 
-def retrive(docs, tfidfs, test, query, resultFile):
+def retrive(docs, tfidfs, test, query, resultFile, threshold):
     results = {}
     for id in tfidfs:
         result = calculateResult(tfidfs[id], query)
@@ -143,9 +151,9 @@ def retrive(docs, tfidfs, test, query, resultFile):
         else:
             break
 
-def retriveAll(docs, tfidfs, tests, queries, resultFile):
+def retriveAll(docs, tfidfs, tests, queries, resultFile, threshhold):
     for test in tests:
-        retrive(docs, tfidfs, test, queries[int(test)], resultFile)
+        retrive(docs, tfidfs, test, queries[int(test)], resultFile, threshhold)
 
 def workOn(dataset):
     f = open("stoplist.txt", "r")
@@ -157,15 +165,21 @@ def workOn(dataset):
     f.close()
     docs = readDocs(dataset)
     queries = readQueries(dataset)
-    for testId in testIds:
-        tests = readTests(dataset, testId)
-        #tests = [1]
-        idf = calculateIDF(docs)
-        tfidfs = calculateTFIDF(docs, idf)
-        resultFile = open(dataset + "Otfidf" + testId + ".txt", "w")
-        retriveAll(docs, tfidfs, tests, queries, resultFile)
-        resultFile.close()
+    for threshold in thresholds:
+        directory = str(threshold)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        for testId in testIds:
+            print "Retrive testID: " + testId + " with threshold: " + directory
+            tests = readTests(dataset, testId)
+            #tests = [1]
+            idf = calculateIDF(docs)
+            tfidfs = calculateTFIDF(docs, idf)
+            resultFile = open(directory + "/" + dataset + "Otfidf" + testId + ".txt", "w")
+            retriveAll(docs, tfidfs, tests, queries, resultFile, threshold)
+            resultFile.close()
 
 #-------------------------------------      Main     ---------------------------------------
 
+printThresholds()
 workOn(datasetName)
