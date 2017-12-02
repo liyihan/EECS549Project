@@ -31,7 +31,7 @@ isUnigram = True
 stopList = []
 testIds = ["0", "1", "2", "3", "4"]
 datasetName = "cran"
-thresholds = [-1000, 0.8]
+thresholds = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08]
 
 def printThresholds():
     f = open("thresholds.txt", "w")
