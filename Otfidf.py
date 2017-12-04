@@ -17,10 +17,10 @@ queryID docID result
 '''
 
 import nltk
-import math
 import string
 import os
 from nltk.stem import *
+import math
 
 stemmer = SnowballStemmer("english")
 isLowerCase = True
@@ -31,7 +31,7 @@ isUnigram = True
 stopList = []
 testIds = ["0", "1", "2", "3", "4"]
 datasetName = "cran"
-thresholds = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09]
+thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 
 def printThresholds():
     f = open("thresholds.txt", "w")
@@ -112,37 +112,57 @@ def calculateIDF(docs):
         idf[token] = 1 + math.log10(n/idf[token])
     return idf
 
-def calculateTFIDF(docs, idf):
+def calculateTFIDF(doc, idf):
+    tf = {}
+    tfidf = {}
+    for token in doc:
+        if token not in idf:
+            continue
+        if token not in tf:
+            tf[token] = 1
+        else:
+            tf[token] = tf[token] + 1
+    for token in tf:
+        tfidf[token] = math.log10(tf[token] + 1) * idf[token]
+    return tfidf
+
+def calculateTFIDFs(docs, idf):
     tfidfs = {}
     for id in docs:
         doc = docs[id]
-        tf = {}
-        tfidf = {}
-        for token in doc:
-            if token not in tf:
-                tf[token] = 1
-            else:
-                tf[token] = tf[token] + 1
-        for token in tf:
-            tfidf[token] = math.log10(tf[token] + 1) * idf[token]
-        tfidfs[id] = tfidf
+        tfidfs[id] = calculateTFIDF(doc, idf)
     return tfidfs
 
-def calculateResult(tfidf, query):
+def calculateNorms(tfidfs):
+    norms = {}
+    for id in tfidfs:
+        total = 0
+        tfidf = tfidfs[id]
+        for token in tfidf:
+            total += tfidf[token] * tfidf[token]
+        norms[id] = total
+    return norms
+
+def calculateResult(dTfidf, qTfidf, dNorm):
     result = 0
-    for token in query:
-        if token in tfidf:
-            result += tfidf[token]
+    qNorm = 0
+    for token in qTfidf:
+        if token in dTfidf:
+            qNorm += qTfidf[token] * qTfidf[token]
+            result += qTfidf[token] * dTfidf[token]
+    if dNorm != 0:
+        result = result/math.sqrt(dNorm)
+    if qNorm != 0:
+        result = result/math.sqrt(qNorm)
     return result
 
-def retrive(docs, tfidfs, test, query, resultFile, threshold):
+def retrieve(docs, idf, tfidfs, docNorms, test, query, resultFile, threshold):
     results = {}
     for id in tfidfs:
-        result = calculateResult(tfidfs[id], query)
+        queryTfidf = calculateTFIDF(query, idf)
+        result = calculateResult(tfidfs[id], queryTfidf, docNorms[id])
         if docs[id].__len__() == 0:
             result = 0
-        else:
-            result /= docs[id].__len__()
         results[id] = result
     sortedDocs = sorted(results.iteritems(), key=lambda (k,v): (v,k), reverse = True)
     for doc in sortedDocs:
@@ -151,9 +171,9 @@ def retrive(docs, tfidfs, test, query, resultFile, threshold):
         else:
             break
 
-def retriveAll(docs, tfidfs, tests, queries, resultFile, threshhold):
+def retrieveAll(docs, idf, tfidfs, norms, tests, queries, resultFile, threshhold):
     for test in tests:
-        retrive(docs, tfidfs, test, queries[int(test)], resultFile, threshhold)
+        retrieve(docs, idf, tfidfs, norms, test, queries[int(test)], resultFile, threshhold)
 
 def workOn(dataset):
     f = open("stoplist.txt", "r")
@@ -165,6 +185,9 @@ def workOn(dataset):
     f.close()
     docs = readDocs(dataset)
     queries = readQueries(dataset)
+    idf = calculateIDF(docs)
+    tfidfs = calculateTFIDFs(docs, idf)
+    docsNorms = calculateNorms(tfidfs)
     for threshold in thresholds:
         directory = str(threshold)
         if not os.path.exists(directory):
@@ -172,11 +195,8 @@ def workOn(dataset):
         for testId in testIds:
             print "Retrive testID: " + testId + " with threshold: " + directory
             tests = readTests(dataset, testId)
-            #tests = [1]
-            idf = calculateIDF(docs)
-            tfidfs = calculateTFIDF(docs, idf)
             resultFile = open(directory + "/" + dataset + "Otfidf" + testId + ".txt", "w")
-            retriveAll(docs, tfidfs, tests, queries, resultFile, threshold)
+            retrieveAll(docs, idf, tfidfs, docsNorms, tests, queries, resultFile, threshold)
             resultFile.close()
 
 #-------------------------------------      Main     ---------------------------------------
