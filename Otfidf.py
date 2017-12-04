@@ -27,7 +27,7 @@ isLowerCase = True
 isStem = True
 isRemoveStopWords = True
 isRemovePunctuation = True
-isUnigram = True
+isUnigram = False
 stopList = []
 testIds = ["0", "1", "2", "3", "4"]
 datasetName = "cran"
@@ -67,6 +67,12 @@ def removePunctuation(doc):
                 tokens.append(token)
     return tokens
 
+def bigram(doc):
+    tokens = []
+    for i in range(0, doc.__len__() - 1):
+        tokens.append(doc[i] + ' ' + doc[i + 1])
+    return tokens
+
 def readFiles(fileName):
     docs = {}
     f = open(fileName)
@@ -83,6 +89,8 @@ def readFiles(fileName):
                 doc = removeStopWords(doc)
             if isRemovePunctuation:
                 doc = removePunctuation(doc)
+            if not isUnigram:
+                doc = bigram(doc)
             docs[count / 2] = doc
     return docs
 
@@ -195,7 +203,11 @@ def workOn(dataset):
         for testId in testIds:
             print "Retrive testID: " + testId + " with threshold: " + directory
             tests = readTests(dataset, testId)
-            resultFile = open(directory + "/" + dataset + "Otfidf" + testId + ".txt", "w")
+            outName = directory + "/" + dataset + "Otfidf"
+            if not isUnigram:
+                outName = outName + "Bi"
+            outName = outName + testId + ".txt"
+            resultFile = open(outName, "w")
             retrieveAll(docs, idf, tfidfs, docsNorms, tests, queries, resultFile, threshold)
             resultFile.close()
 
