@@ -17,9 +17,10 @@ queryID docID result
 '''
 
 import numpy as np
+import os
 import pdb
 
-datasetName = 'npl'
+datasetName = 'cran'
 fold = 5
 method = 'Otfidf'
 
@@ -37,8 +38,10 @@ def MAP(datasetName, method, fold):
 
 	goldDir = datasetName + 'Test'
 	# for each threshold
-	thresholds = open('thresholds.txt', 'r').split('\n')
-	results = open('results/' + datasetName + method + '.txt','w')
+	thresholds = open('thresholds.txt', 'r').read().split('\n')[:-1]
+	if not os.path.exists('results'):
+		os.makedirs('results')
+	ans = open('results/' + datasetName + method + '.txt','w')
 	for thresh in thresholds:
 		ResultDir = str(thresh) + '/' + datasetName + method
 		MAPs = []
@@ -47,11 +50,11 @@ def MAP(datasetName, method, fold):
 			resultFile = ResultDir + str(i) + '.txt'
 			goldFile = goldDir + str(i) + '.txt'
 			result = open(resultFile, 'r').read().split('\n')
+			
 			gold = open(goldFile, 'r').read()
 			goldid = gold.split()
 			result_dict = {}
 			for line in result[:-1]:
-				# print line
 				[qid, docid, _] = line.split()
 				if qid in result_dict.keys():
 					result_dict[qid].append(docid)
@@ -68,7 +71,11 @@ def MAP(datasetName, method, fold):
 					avg += corr/num
 				avg /= len(res)
 				avePs.append(avg)
+			if len(avePs) == 0:
+				avePs = [0]
 			MAPs.append(np.mean(avePs))
-		results.write(thresh + '\t' + np.mean(MAPs))
+		print str(thresh) + '\t' + str(np.mean(MAPs))
+		ans.write(str(thresh) + '\t' + str(np.mean(MAPs)) + '\n')
+		# TO DO: return sorted MAPs 
 
 MAP(datasetName, method,fold)
