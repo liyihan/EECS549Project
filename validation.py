@@ -22,7 +22,8 @@ import pdb
 
 datasetName = 'cran'
 fold = 5
-method = 'Otfidf'
+method = 'QBtfidf'
+#method = 'QBtfidfBi'
 
 def MAP(datasetName, method, fold):
 	# read query-doc pairs
