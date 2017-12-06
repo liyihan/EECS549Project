@@ -53,6 +53,7 @@ def MAP(datasetName, method, fold):
 			
 			gold = open(goldFile, 'r').read()
 			goldid = gold.split()
+			# print 'goldid', goldid
 			result_dict = {}
 			for line in result[:-1]:
 				[qid, docid, _] = line.split()
@@ -61,15 +62,19 @@ def MAP(datasetName, method, fold):
 				else:
 					result_dict[qid] = [docid]
 			avePs = []
-			# for each query calculate aveP
-			for qid, res in result_dict.items():
-				num, corr, avg = 0.0, 0.0, 0.0
-				for docid in res:
-					num += 1	
-					if docid in relDict[qid]:
-						corr += 1
-					avg += corr/num
-				avg /= len(res)
+			# for each query in the testset calculate aveP
+			for qid in goldid:
+				if qid not in result_dict.keys():
+					avg = 0.0
+				else:
+					res = result_dict[qid]
+					num, corr, avg = 0.0, 0.0, 0.0
+					for docid in res:
+						num += 1	
+						if docid in relDict[qid]:
+							corr += 1
+						avg += corr/num
+					avg /= len(res)
 				avePs.append(avg)
 			if len(avePs) == 0:
 				avePs = [0]
