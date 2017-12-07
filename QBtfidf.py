@@ -27,14 +27,14 @@ isLowerCase = True
 isStem = True
 isRemoveStopWords = True
 isRemovePunctuation = True
-isUnigram = False
+isUnigram = True
 stopList = []
 testIds = ["0", "1", "2", "3", "4"]
 datasetName = "cran"
 thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 
 def QBFunc(tfidf, qtf):
-    value = tfidf * qtf
+    value = tfidf * (1 + math.log(qtf + 1, 2) * 0.01)
     return value
 
 def printThresholds():
@@ -152,7 +152,7 @@ def calculateNorms(tfidfs, qTf):
         tfidf = tfidfs[id]
         for token in tfidf:
             if token in qTf:
-                total += QBFunc(tfidf[token], qTf[token])
+                total += QBFunc(tfidf[token], qTf[token]) * QBFunc(tfidf[token], qTf[token])
             else:
                 total += tfidf[token] * tfidf[token]
         norms[id] = total
@@ -198,7 +198,7 @@ def train(idf, tests, queries):
     qTf = {}
     for queryId in queries:
         if str(queryId) not in tests:
-            for token in queries[queryId]:
+            for token in set(queries[queryId]):
                 if token in idf:
                     if token in qTf:
                         qTf[token] = qTf[token] + 1
