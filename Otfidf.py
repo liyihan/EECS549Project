@@ -27,11 +27,11 @@ isLowerCase = True
 isStem = True
 isRemoveStopWords = True
 isRemovePunctuation = True
-isUnigram = False
+isUnigram = True
 stopList = []
 testIds = ["0", "1", "2", "3", "4"]
 datasetName = "cran"
-thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+thresholds = [0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.22, 0.24, 0.26]
 
 def printThresholds():
     f = open("thresholds.txt", "w")
@@ -155,8 +155,8 @@ def calculateResult(dTfidf, qTfidf, dNorm):
     result = 0
     qNorm = 0
     for token in qTfidf:
+        qNorm += qTfidf[token] * qTfidf[token]
         if token in dTfidf:
-            qNorm += qTfidf[token] * qTfidf[token]
             result += qTfidf[token] * dTfidf[token]
     if dNorm != 0:
         result = result/math.sqrt(dNorm)

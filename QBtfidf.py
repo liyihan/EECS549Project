@@ -31,10 +31,10 @@ isUnigram = True
 stopList = []
 testIds = ["0", "1", "2", "3", "4"]
 datasetName = "cran"
-thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+thresholds = [0.2, 0.22, 0.24, 0.26, 0.28, 0.3, 0.32, 0.34, 0.36]
 
 def QBFunc(tfidf, qtf):
-    value = tfidf * (1 + math.log(qtf + 1, 2) * 0.01)
+    value = tfidf * (1 + math.log(qtf + 1, 2) * 0.2)
     return value
 
 def printThresholds():
@@ -161,18 +161,30 @@ def calculateNorms(tfidfs, qTf):
 def calculateResult(dTfidf, qTfidf, dNorm, qTf):
     result = 0
     qNorm = 0
+    countA = 0
+    countB = 0
     for token in qTfidf:
         if token in dTfidf:
             if token in qTf:
-                qNorm += QBFunc(qTfidf[token], qTf[token]) * QBFunc(qTfidf[token], qTf[token])
+                #qNorm += QBFunc(qTfidf[token], qTf[token]) * QBFunc(qTfidf[token], qTf[token])
                 result += QBFunc(qTfidf[token], qTf[token]) * QBFunc(dTfidf[token], qTf[token])
             else:
-                qNorm += qTfidf[token] * qTfidf[token]
+                #qNorm += qTfidf[token] * qTfidf[token]
                 result += qTfidf[token] * dTfidf[token]
+    for token in qTfidf:
+        if token in qTf:
+            countA = countA + 1
+            qNorm += QBFunc(qTfidf[token], qTf[token]) * QBFunc(qTfidf[token], qTf[token])
+            #result += QBFunc(qTfidf[token], qTf[token]) * QBFunc(dTfidf[token], qTf[token])
+        else:
+            countB = countB + 1
+            qNorm += qTfidf[token] * qTfidf[token]
+            #result += qTfidf[token] * dTfidf[token]
     if dNorm != 0:
         result = result/math.sqrt(dNorm)
     if qNorm != 0:
         result = result/math.sqrt(qNorm)
+    #print countA, countB
     return result
 
 def retrieve(docs, idf, tfidfs, qTf, docNorms, test, query, resultFile, threshold):
