@@ -31,10 +31,11 @@ isUnigram = True
 stopList = []
 testIds = ["0", "1", "2", "3", "4"]
 datasetName = "cran"
-thresholds = [0.2, 0.22, 0.24, 0.26, 0.28, 0.3, 0.32, 0.34, 0.36]
+thresholds = [0.12, 0.14, 0.16, 0.18, 0.20, 0.22, 0.24, 0.26, 0.28]
 
-def QBFunc(tfidf, qtf):
-    value = tfidf * (1 + math.log(qtf + 1, 2) * 0.2)
+def QBFunc(tfidf, qtf, idf):
+    value = tfidf * (1 - math.log(qtf + 1, 2) * 0.05)
+    #value = tfidf + math.log10(qtf + 1)/idf
     return value
 
 def printThresholds():
@@ -104,6 +105,7 @@ def readDocs(dataset):
 
 def readQueries(dataset):
     queries = readFiles(dataset + 'Queries.txt')
+    #print queries
     return queries
 
 def readTests(dataset, testId):
@@ -145,20 +147,20 @@ def calculateTFIDFs(docs, idf):
         tfidfs[id] = calculateTFIDF(doc, idf)
     return tfidfs
 
-def calculateNorms(tfidfs, qTf):
+def calculateNorms(tfidfs, qTf, idf):
     norms = {}
     for id in tfidfs:
         total = 0
         tfidf = tfidfs[id]
         for token in tfidf:
             if token in qTf:
-                total += QBFunc(tfidf[token], qTf[token]) * QBFunc(tfidf[token], qTf[token])
+                total += QBFunc(tfidf[token], qTf[token], idf[token]) * QBFunc(tfidf[token], qTf[token], idf[token])
             else:
                 total += tfidf[token] * tfidf[token]
         norms[id] = total
     return norms
 
-def calculateResult(dTfidf, qTfidf, dNorm, qTf):
+def calculateResult(dTfidf, qTfidf, dNorm, qTf, idf):
     result = 0
     qNorm = 0
     countA = 0
@@ -166,20 +168,16 @@ def calculateResult(dTfidf, qTfidf, dNorm, qTf):
     for token in qTfidf:
         if token in dTfidf:
             if token in qTf:
-                #qNorm += QBFunc(qTfidf[token], qTf[token]) * QBFunc(qTfidf[token], qTf[token])
-                result += QBFunc(qTfidf[token], qTf[token]) * QBFunc(dTfidf[token], qTf[token])
+                result += QBFunc(qTfidf[token], qTf[token], idf[token]) * QBFunc(dTfidf[token], qTf[token], idf[token])
             else:
-                #qNorm += qTfidf[token] * qTfidf[token]
                 result += qTfidf[token] * dTfidf[token]
     for token in qTfidf:
         if token in qTf:
             countA = countA + 1
-            qNorm += QBFunc(qTfidf[token], qTf[token]) * QBFunc(qTfidf[token], qTf[token])
-            #result += QBFunc(qTfidf[token], qTf[token]) * QBFunc(dTfidf[token], qTf[token])
+            qNorm += QBFunc(qTfidf[token], qTf[token], idf[token]) * QBFunc(qTfidf[token], qTf[token], idf[token])
         else:
             countB = countB + 1
             qNorm += qTfidf[token] * qTfidf[token]
-            #result += qTfidf[token] * dTfidf[token]
     if dNorm != 0:
         result = result/math.sqrt(dNorm)
     if qNorm != 0:
@@ -191,7 +189,7 @@ def retrieve(docs, idf, tfidfs, qTf, docNorms, test, query, resultFile, threshol
     results = {}
     for id in tfidfs:
         queryTfidf = calculateTFIDF(query, idf)
-        result = calculateResult(tfidfs[id], queryTfidf, docNorms[id], qTf)
+        result = calculateResult(tfidfs[id], queryTfidf, docNorms[id], qTf, idf)
         if docs[id].__len__() == 0:
             result = 0
         results[id] = result
@@ -238,7 +236,7 @@ def workOn(dataset):
             print "Retrive testID: " + testId + " with threshold: " + directory
             tests = readTests(dataset, testId)
             qTf = train(idf, tests, queries)
-            docsNorms = calculateNorms(tfidfs, qTf)
+            docsNorms = calculateNorms(tfidfs, qTf, idf)
             outName = directory + "/" + dataset + "QBtfidf"
             if not isUnigram:
                 outName = outName + "Bi"
