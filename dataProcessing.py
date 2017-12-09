@@ -193,23 +193,23 @@ def xFoldValidation():
     random.shuffle(cranArr)
     random.shuffle(nplArr)
 
-    interval = len(cranArr)/5
+    interval = len(cranArr)/3
     folders = dict()
-    for i in range(0,5):
+    for i in range(0,3):
         if (i+1)*interval < len(cranArr):
             folders[i] = cranArr[i*interval:(i+1)*interval]
         else:
             folders[i] = cranArr[(i*interval):]   
-    for i in range(0,5):
-        trainFilename = "cranTrain" + str(i) + ".txt"
+    for i in range(0,3):
+        trainFilename = "cranTrain" + str(i) + "-3folders.txt"
         trainFile = open(trainFilename, 'w')
 
-        testFilename = "cranTest" + str(i) + ".txt"
+        testFilename = "cranTest" + str(i) + "-3folders.txt"
         testFile = open(testFilename, 'w')
 
         trainStr = ""
         testStr = ""
-        for j in range(0,5):
+        for j in range(0,3):
             if j != i:
                 for x in folders[j]:
                     trainStr = trainStr + " " + str(x)
@@ -221,15 +221,15 @@ def xFoldValidation():
         trainFile.write(trainStr)
         testFile.write(testStr)
 
-
-    interval = len(nplArr)/5
+'''
+    interval = len(nplArr)/3
     folders = dict()
-    for i in range(0,5):
+    for i in range(0,3):
         if (i+1)*interval < len(nplArr):
             folders[i] = nplArr[i*interval:(i+1)*interval]
         else:
             folders[i] = nplArr[(i*interval):]   
-    for i in range(0,5):
+    for i in range(0,3):
         trainFilename = "nplTrain" + str(i) + ".txt"
         trainFile = open(trainFilename, 'w')
 
@@ -238,7 +238,7 @@ def xFoldValidation():
 
         trainStr = ""
         testStr = ""
-        for j in range(0,5):
+        for j in range(0,3):
             if j != i:
                 for x in folders[j]:
                     trainStr = trainStr + " " + str(x)
@@ -252,7 +252,7 @@ def xFoldValidation():
 
 
 
-    '''
+
     [cranTrain1]
     1 4 7 9
 
@@ -264,8 +264,9 @@ def xFoldValidation():
 
     [cranTest2]
     12 34 35
-    '''
+    
     return cranArr
+    '''
 '''
 cranDocs = readDocs('cran')
 cranDocsFile = open("cranDocs.txt", 'w')
@@ -287,12 +288,12 @@ nplQuriesFile.write(nplQuries)
 nplRel = readRel('npl')
 nplRelFile = open("nplRel.txt", 'w')
 nplRelFile.write(nplRel)
-'''
+
 cranRel = readRel('cran')
 cranRelFile = open("cranRel.txt", 'w')
 cranRelFile.write(cranRel)
 '''
 xFoldValidation()
-'''
+
 
 
