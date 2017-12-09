@@ -187,29 +187,30 @@ def readRel(filename):
 
 
 def xFoldValidation():
+    num_folder = 4;
     cranArr = list(range(1,226))
     nplArr = list(range(1,94))
 
     random.shuffle(cranArr)
     random.shuffle(nplArr)
 
-    interval = len(cranArr)/3
+    interval = len(cranArr)/num_folder
     folders = dict()
-    for i in range(0,3):
+    for i in range(0,num_folder):
         if (i+1)*interval < len(cranArr):
             folders[i] = cranArr[i*interval:(i+1)*interval]
         else:
             folders[i] = cranArr[(i*interval):]   
-    for i in range(0,3):
-        trainFilename = "cranTrain" + str(i) + "-3folders.txt"
+    for i in range(0,num_folder):
+        trainFilename = "cranTrain" + str(i) + "-" + str(num_folder)+ "folders.txt"
         trainFile = open(trainFilename, 'w')
 
-        testFilename = "cranTest" + str(i) + "-3folders.txt"
+        testFilename = "cranTest" + str(i) + "-" + str(num_folder)+ "folders.txt"
         testFile = open(testFilename, 'w')
 
         trainStr = ""
         testStr = ""
-        for j in range(0,3):
+        for j in range(0,num_folder):
             if j != i:
                 for x in folders[j]:
                     trainStr = trainStr + " " + str(x)
