@@ -187,7 +187,7 @@ def readRel(filename):
 
 
 def xFoldValidation():
-    num_folder = 4;
+    num_folder = 7;
     cranArr = list(range(1,226))
     nplArr = list(range(1,94))
 
@@ -202,10 +202,10 @@ def xFoldValidation():
         else:
             folders[i] = cranArr[(i*interval):]   
     for i in range(0,num_folder):
-        trainFilename = "cranTrain" + str(i) + "-" + str(num_folder)+ "folders.txt"
+        trainFilename = "cranTrain" + str(i) + ".txt"
         trainFile = open(trainFilename, 'w')
 
-        testFilename = "cranTest" + str(i) + "-" + str(num_folder)+ "folders.txt"
+        testFilename = "cranTest" + str(i) + ".txt"
         testFile = open(testFilename, 'w')
 
         trainStr = ""
